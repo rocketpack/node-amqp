@@ -887,7 +887,11 @@ Connection.prototype._sendMethod = function (channel, method, args) {
 
   //debug("sending frame: " + c);
 
-  this.write(c);
+  try { // unfortunate, but necessary. Otherwise we can crash with a 'Socket is not writable' error in an uncatchable IO callback stack
+    this.write(c); 
+  } catch(e) {
+    console.error('node-amqp: write error: '+e);
+  }
 };
 
 
