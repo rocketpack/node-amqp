@@ -993,7 +993,11 @@ Connection.prototype._sendBody = function (channel, body, properties) {
     b.used += length;
 
     b[b.used++] = 206; // constants.frameEnd;
-    return this.write(b);
+    try {
+      return this.write(b); 
+    } catch(e) {
+      console.error('node-amqp: write error: '+e);
+    }
 
     //debug('body sent: ' + JSON.stringify(b));
 
@@ -1005,12 +1009,13 @@ Connection.prototype._sendBody = function (channel, body, properties) {
     b[b.used++] = 3; // constants.frameBody
     serializeInt(b, 2, channel);
     serializeInt(b, 4, body.length);
-    this.write(b);
-
-    this.write(body);
-
-    return this.write(String.fromCharCode(206)); // frameEnd
-
+    try {
+      this.write(b); 
+      this.write(body); 
+      return this.write(String.fromCharCode(206)); // frameEnd
+    } catch(e) {
+      console.error('node-amqp: write error: '+e);
+    }
   } else {
     // Optimize for JSON.
     // Use asciiWrite() which is much faster than utf8Write().
@@ -1034,7 +1039,11 @@ Connection.prototype._sendBody = function (channel, body, properties) {
     b.used += length;
 
     b[b.used++] = 206; // constants.frameEnd;
-    return this.write(b);
+    try {
+      this.write(b); 
+    } catch(e) {
+      console.error('node-amqp: write error: '+e);
+    }
   }
 };
 
