@@ -1020,7 +1020,7 @@ Connection.prototype._sendBody = function (channel, body, properties) {
     // Optimize for JSON.
     // Use asciiWrite() which is much faster than utf8Write().
     var jsonBody = JSON.stringify(body);
-    var length = jsonBody.length;
+    var length = Buffer.byteLength(jsonBody);
 
     debug('sending json: ' + jsonBody);
 
@@ -1035,7 +1035,7 @@ Connection.prototype._sendBody = function (channel, body, properties) {
     serializeInt(b, 2, channel);
     serializeInt(b, 4, length);
 
-    b.write(jsonBody, b.used, 'ascii');
+    b.write(jsonBody, b.used, 'utf8');
     b.used += length;
 
     b[b.used++] = 206; // constants.frameEnd;
